@@ -26,12 +26,70 @@ body {
 }
 
 /* Custom utility classes */
+.line-clamp-1 {
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 1;
+  line-clamp: 1;
+}
+
 .line-clamp-2 {
   overflow: hidden;
   display: -webkit-box;
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 2;
   line-clamp: 2;
+}
+
+.line-clamp-3 {
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+  line-clamp: 3;
+}
+
+/* Mobile responsive improvements */
+@media (max-width: 450px) {
+  /* Ensure content doesn't overflow on very small screens */
+  .container-mobile {
+    padding-left: 0.75rem;
+    padding-right: 0.75rem;
+  }
+  
+  /* Adjust font sizes for mobile */
+  .text-mobile-sm {
+    font-size: 0.75rem;
+  }
+  
+  .text-mobile-base {
+    font-size: 0.875rem;
+  }
+  
+  .text-mobile-lg {
+    font-size: 1rem;
+  }
+  
+  /* Stack navigation items on very small screens */
+  .nav-mobile {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  
+  /* Adjust button padding for mobile */
+  .btn-mobile {
+    padding: 0.5rem 0.75rem;
+    font-size: 0.875rem;
+  }
+  
+  /* Full width for modal on mobile */
+  .modal-mobile {
+    margin: 0.5rem;
+    width: calc(100% - 1rem);
+    max-height: calc(100vh - 1rem);
+    overflow-y: auto;
+  }
 }
 
 /* Smooth transitions for better UX */
