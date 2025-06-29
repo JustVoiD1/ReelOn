@@ -19,6 +19,24 @@ const ReelsPlayer: React.FC<ReelsPlayerProps> = ({ video, isActive, index, globa
   const [hasError, setHasError] = useState(false);
   const [showControls, setShowControls] = useState(false);
 
+  const handleLike = () => {
+    console.log("Liked");
+    
+  }
+  const handleComment = () => {
+    console.log("Commented");
+    
+  }
+  const handleShare = () => {
+    console.log("Share triggered");
+    
+  }
+  const handleOpt = () => {
+    console.log("Options triggered");
+    
+  }
+  
+
   // Update muted state when global muted changes
   useEffect(() => {
     setIsMuted(globalMuted);
@@ -157,9 +175,9 @@ const ReelsPlayer: React.FC<ReelsPlayerProps> = ({ video, isActive, index, globa
       )}
 
       {/* Right Side Action Buttons */}
-      <div className="absolute right-4 bottom-32 flex flex-col items-center space-y-6 z-10">
+      <div className="absolute right-4 bottom-25 flex flex-col items-center space-y-6 z-10">
         {/* Like */}
-        <button className="flex flex-col items-center text-white hover:scale-110 transition-transform">
+        <button className="flex flex-col items-center text-white hover:scale-110 transition-transform" onClick={handleLike}>
           <div className="bg-black/30 p-3 rounded-full hover:bg-black/50 transition-colors">
             <Heart className="w-6 h-6" />
           </div>
@@ -167,7 +185,7 @@ const ReelsPlayer: React.FC<ReelsPlayerProps> = ({ video, isActive, index, globa
         </button>
 
         {/* Comment */}
-        <button className="flex flex-col items-center text-white hover:scale-110 transition-transform">
+        <button className="flex flex-col items-center text-white hover:scale-110 transition-transform " onClick={handleComment}>
           <div className="bg-black/30 p-3 rounded-full hover:bg-black/50 transition-colors">
             <MessageCircle className="w-6 h-6" />
           </div>
@@ -175,25 +193,21 @@ const ReelsPlayer: React.FC<ReelsPlayerProps> = ({ video, isActive, index, globa
         </button>
 
         {/* Share */}
-        <button className="flex flex-col items-center text-white hover:scale-110 transition-transform">
+        <button className="flex flex-col items-center text-white hover:scale-110 transition-transform" onClick={handleShare}>
           <div className="bg-black/30 p-3 rounded-full hover:bg-black/50 transition-colors">
             <Share className="w-6 h-6" />
           </div>
         </button>
 
         {/* Options (3 dots) */}
-        <button className="flex flex-col items-center text-white hover:scale-110 transition-transform">
+        <button className="flex flex-col items-center text-white hover:scale-110 transition-transform" onClick={handleOpt}>
           <div className="bg-black/30 p-3 rounded-full hover:bg-black/50 transition-colors">
             <MoreHorizontal className="w-6 h-6" />
           </div>
         </button>
 
-        {/* User Profile Picture (small) */}
-        <button className="flex flex-col items-center text-white hover:scale-110 transition-transform">
-          <div className="w-12 h-12 bg-gradient-to-r from-purple-400 to-pink-400 rounded-full flex items-center justify-center border-2 border-white">
-            <User className="w-6 h-6 text-white" />
-          </div>
-        </button>
+       
+        
       </div>
 
       {/* Bottom Info */}

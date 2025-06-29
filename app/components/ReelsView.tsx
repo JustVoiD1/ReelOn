@@ -259,7 +259,7 @@ const ReelsView: React.FC<ReelsViewProps> = ({
       </div>
 
       {/* Video Progress Indicators */}
-      <div className="absolute right-2 top-1/2 transform -translate-y-1/2 z-20 flex flex-col space-y-2">
+      {/* <div className="absolute right-2 top-1/2 transform -translate-y-1/2 z-20 flex flex-col space-y-2">
         {videos.map((_, index) => (
           <button
             key={index}
@@ -273,7 +273,7 @@ const ReelsView: React.FC<ReelsViewProps> = ({
             }`}
           />
         ))}
-      </div>
+      </div> */}
 
       {/* Upload Modal */}
       <AnimatePresence>
