@@ -153,7 +153,7 @@ const ReelsPlayer: React.FC<ReelsPlayerProps> = ({ video, isActive, index, globa
       )}
 
       {/* Right Side Action Buttons */}
-      <div className="absolute right-4 bottom-20 flex flex-col items-center space-y-6 z-10">
+      <div className="absolute right-4 bottom-32 flex flex-col items-center space-y-6 z-10">
         {/* Like */}
         <button className="flex flex-col items-center text-white hover:scale-110 transition-transform">
           <div className="bg-black/30 p-3 rounded-full hover:bg-black/50 transition-colors">
@@ -193,7 +193,7 @@ const ReelsPlayer: React.FC<ReelsPlayerProps> = ({ video, isActive, index, globa
       </div>
 
       {/* Bottom Info */}
-      <div className="absolute bottom-4 left-4 right-20 z-10 text-white">
+      <div className="absolute bottom-20 left-4 right-20 z-10 text-white">
         <div className="space-y-2">
           <div className="flex items-center space-x-2 mb-3">
             <div className="w-8 h-8 bg-gradient-to-r from-purple-400 to-pink-400 rounded-full flex items-center justify-center">

@@ -233,7 +233,7 @@ const ReelsView: React.FC<ReelsViewProps> = ({
         {videos.map((video, index) => (
           <motion.div
             key={video._id?.toString() || index}
-            className="absolute inset-0 w-full h-full"
+            className="absolute inset-0 w-fit mx-auto h-full"
             initial={{ 
               y: index === 0 ? 0 : '100%',
               opacity: index === 0 ? 1 : 0 

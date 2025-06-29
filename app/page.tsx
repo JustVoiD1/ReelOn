@@ -8,6 +8,7 @@ import { IVideo } from '@/models/video';
 import React, { useEffect, useState } from 'react';
 import FileUpload from './components/FileUpload';
 import VideoPlayer from './components/VideoPlayer';
+import AutoPlayVideoPlayer from './components/AutoPlayVideoPlayer';
 import ReelsView from './components/ReelsView';
 import BottomNavigation from './components/BottomNavigation';
 import { IKUploadResponse } from 'imagekitio-next/dist/types/components/IKUpload/props';
@@ -264,18 +265,18 @@ export default function Home() {
         ) : (
           <div className="space-y-6 xs:space-y-8">
             <div className="flex flex-col xs:flex-row justify-between items-start xs:items-center gap-4 px-1">
-              <h2 className="text-xl xs:text-2xl font-bold text-gray-900">Latest Reels</h2>
+              {/* <h2 className="text-xl xs:text-2xl font-bold text-gray-900">Latest Reels</h2> */}
               {videos.length > 0 && (
                 <button
                   onClick={() => setShowReelsView(true)}
                   className="bg-gradient-to-r from-pink-500 to-red-500 text-white px-4 py-2 rounded-lg hover:from-pink-600 hover:to-red-600 transition-all flex items-center gap-2 text-sm font-semibold"
                 >
                   <Play className="w-4 h-4" />
-                  Watch Reels
+                  Latest Reels
                 </button>
               )}
             </div>
-            <div className="grid gap-4 xs:gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
+            <div className="grid gap-4 xs:gap-6 grid-cols-1 sm:grid-cols-1 lg:grid-cols-1">
               {videos.map((video: IVideo, index: number) => (
                 <motion.div
                   key={video._id?.toString() || index}
@@ -287,20 +288,12 @@ export default function Home() {
                   <div className="aspect-video bg-gray-200 flex items-center justify-center relative overflow-hidden rounded-t-lg group cursor-pointer"
                        onClick={() => setShowReelsView(true)}>
                     {video.videoUrl ? (
-                      <>
-                        <VideoPlayer
-                          src={video.videoUrl}
-                          className="w-full h-full"
-                          autoPlay={false}
-                          muted={true}
-                        />
-                        {/* Play Overlay */}
-                        <div className="absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                          <div className="bg-white/20 backdrop-blur-sm p-4 rounded-full">
-                            <Play className="w-8 h-8 text-white" fill="white" />
-                          </div>
-                        </div>
-                      </>
+                      <AutoPlayVideoPlayer
+                        src={video.videoUrl}
+                        className="w-full h-full"
+                        muted={true}
+                        threshold={0.6}
+                      />
                     ) : (
                       <div className="text-gray-400">
                         <div className="text-4xl mb-2">🎬</div>

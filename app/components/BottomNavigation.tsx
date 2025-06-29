@@ -16,7 +16,7 @@ const BottomNavigation: React.FC<BottomNavigationProps> = ({
 }) => {
   return (
     <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 z-50">
-      <div className="flex items-center justify-around px-4 py-2 max-w-lg mx-auto">
+      <div className="flex items-center justify-around px-4 py-1 max-w-lg mx-auto">
         {/* Home */}
         <button
           onClick={() => onNavigate('home')}
@@ -43,7 +43,7 @@ const BottomNavigation: React.FC<BottomNavigationProps> = ({
           onClick={onShowUpload}
           className="flex flex-col items-center justify-center p-2 transition-transform hover:scale-105"
         >
-          <div className="bg-black text-white w-12 h-8 rounded-lg flex items-center justify-center">
+          <div className="bg-gradient-to-br from-purple-600 via-pink-600 to-orange-600 text-white w-12 h-8 rounded-lg flex items-center justify-center">
             <Plus className="w-6 h-6" />
           </div>
         </button>
