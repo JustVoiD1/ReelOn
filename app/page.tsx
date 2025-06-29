@@ -230,7 +230,7 @@ export default function Home() {
               </span>
               <button
                 onClick={() => signOut()}
-                className="ml-4 text-gray-600 hover:text-gray-800 transition-colors text-sm xs:text-base"
+                className="ml-4 border-2 border-slate-300 px-2 py-2 rounded-lg text-gray-600 hover:text-white transition-colors text-sm xs:text-base hover:bg-red-400"
               >
                 Sign Out
               </button>

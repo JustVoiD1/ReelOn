@@ -344,7 +344,7 @@ const FileUpload = ({ onUploadComplete, onClose, isModal = false }: FileUploadPr
                                             />
                                             <button
                                                 onClick={() => fileInputRef.current?.click()}
-                                                className="bg-purple-600 hover:bg-purple-700 text-white px-4 xs:px-6 py-1.5 xs:py-2 rounded-lg font-medium transition-colors text-sm xs:text-base"
+                                                className="bg-gradient-to-br from-purple-600 via-pink-700 to-orange-600 hover:bg-pink-700 text-white px-4 xs:px-6 py-1.5 xs:py-2 rounded-lg font-medium transition-colors text-sm xs:text-base"
                                             >
                                                 Browse Files
                                             </button>
