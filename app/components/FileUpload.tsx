@@ -373,7 +373,7 @@ const FileUpload = ({ onUploadComplete, onClose, isModal = false }: FileUploadPr
                                                 value={title}
                                                 onChange={(e) => setTitle(e.target.value)}
                                                 placeholder="Enter a catchy title for your reel"
-                                                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none transition-all"
+                                                className="text-black w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none transition-all"
                                                 maxLength={100}
                                             />
                                             <p className="text-xs text-gray-500 mt-1">
@@ -391,7 +391,7 @@ const FileUpload = ({ onUploadComplete, onClose, isModal = false }: FileUploadPr
                                                 onChange={(e) => setDescription(e.target.value)}
                                                 placeholder="Write a caption that describes your reel..."
                                                 rows={3}
-                                                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none transition-all resize-none"
+                                                className="text-black w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none transition-all resize-none"
                                                 maxLength={500}
                                             />
                                             <p className="text-xs text-gray-500 mt-1">
