@@ -33,6 +33,8 @@ const ReelsPlayer: React.FC<ReelsPlayerProps> = ({ video, isActive, index, globa
     if (!video) return;
 
     if (isActive) {
+      // Reset video to beginning when it becomes active
+      video.currentTime = 0;
       video.play().then(() => {
         setIsPlaying(true);
       }).catch(e => {
@@ -92,6 +94,8 @@ const ReelsPlayer: React.FC<ReelsPlayerProps> = ({ video, isActive, index, globa
       video.pause();
       setIsPlaying(false);
     } else {
+      // Reset to beginning when manually playing
+      video.currentTime = 0;
       video.play().then(() => {
         setIsPlaying(true);
       }).catch(e => {

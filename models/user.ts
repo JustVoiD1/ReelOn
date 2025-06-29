@@ -4,15 +4,16 @@ type ObjectId = mongoose.Types.ObjectId
 
 export interface IUser {
     email: string;
+    username: string;
     password: string;
     _id?: ObjectId;
     createdAt?: Date;
     updatedAt?: Date;
-
 }
 
 const userSchema = new Schema<IUser>({
     email: {type: String, required: true, unique: true},
+    username: {type: String, required: true, unique: true, trim: true, minlength: 3, maxlength: 20},
     password: {type: String, required: true},
     },
     {timestamps: true}

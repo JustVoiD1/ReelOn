@@ -26,7 +26,7 @@ const BottomNavigation: React.FC<BottomNavigationProps> = ({
               : 'text-gray-500 hover:text-gray-700'
           }`}
         >
-          <Home className={`w-6 h-6 ${currentView === 'home' ? 'fill-current' : ''}`} />
+          <Home className={`w-6 h-6 text-pink-500 ${currentView === 'home' ? 'fill-current' : ''}`} />
           <span className="text-xs mt-1">Home</span>
         </button>
 
@@ -57,7 +57,7 @@ const BottomNavigation: React.FC<BottomNavigationProps> = ({
               : 'text-gray-500 hover:text-gray-700'
           }`}
         >
-          <Play className={`w-6 h-6 ${currentView === 'reels' ? 'fill-current' : ''}`} />
+          <Play className={`w-6 h-6 text-pink-500 ${currentView === 'reels' ? 'fill-current' : ''}`} />
           <span className="text-xs mt-1">Reels</span>
         </button>
 

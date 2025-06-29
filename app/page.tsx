@@ -226,7 +226,7 @@ export default function Home() {
             
             <div className="flex items-center">
               <span className="text-gray-700 text-sm xs:text-base">
-                Welcome, {session.user?.email?.split('@')[0]}
+                Welcome, {(session.user as any)?.username || session.user?.email?.split('@')[0]}
               </span>
               <button
                 onClick={() => signOut()}

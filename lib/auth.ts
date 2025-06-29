@@ -1,3 +1,4 @@
+/// <reference path="../types/next-auth.d.ts" />
 import { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { connectToDB } from "./db";
@@ -37,6 +38,7 @@ export const authOptions: NextAuthOptions = {
                     return {
                         id: user._id.toString(),
                         email: user.email,
+                        username: user.username,
                     };
                 } catch (error) {
                     console.error("Auth error:", error);
@@ -49,12 +51,14 @@ export const authOptions: NextAuthOptions = {
         async jwt({ token, user }) {
             if (user) {
                 token.id = user.id;
+                (token as any).username = (user as any).username;
             }
             return token;
         },
         async session({ session, token }) {
             if (session.user) {
-                session.user.id = token.id as string;
+                (session.user as any).id = token.id as string;
+                (session.user as any).username = token.username as string;
             }
             return session;
         },

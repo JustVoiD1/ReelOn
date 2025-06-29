@@ -40,7 +40,8 @@ const AutoPlayVideoPlayer: React.FC<AutoPlayVideoPlayerProps> = ({
           if (!video) return;
 
           if (inView && !isPlaying) {
-            // Video is in view, start playing
+            // Video is in view, reset to beginning and start playing
+            // video.currentTime = 0;
             video.play().then(() => {
               setIsPlaying(true);
             }).catch(e => {
