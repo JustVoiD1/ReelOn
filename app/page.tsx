@@ -11,6 +11,7 @@ import VideoPlayer from './components/VideoPlayer';
 import AutoPlayVideoPlayer from './components/AutoPlayVideoPlayer';
 import ReelsView from './components/ReelsView';
 import BottomNavigation from './components/BottomNavigation';
+import PlanLimitNotification from './components/PlanLimitNotification';
 import { IKUploadResponse } from 'imagekitio-next/dist/types/components/IKUpload/props';
 import { Plus, Heart, MessageCircle, Share2, User, Play } from 'lucide-react';
 
@@ -21,6 +22,17 @@ export default function Home() {
   const [showUploadModal, setShowUploadModal] = useState(false);
   const [showReelsView, setShowReelsView] = useState(false);
   const [currentView, setCurrentView] = useState<'home' | 'reels'>('home');
+  const [showPlanLimitNotification, setShowPlanLimitNotification] = useState(false);
+
+  // Handle upload attempt - show notification and then allow upload
+  const handleUploadAttempt = () => {
+    setShowPlanLimitNotification(true);
+    setShowUploadModal(true);
+    // Auto-hide notification after 8 seconds
+    setTimeout(() => {
+      setShowPlanLimitNotification(false);
+    }, 15000);
+  };
 
   const handleUploadComplete = async (response: IKUploadResponse, title: string, description: string) => {
     try {
@@ -88,7 +100,7 @@ export default function Home() {
               setCurrentView('home');
             }
           }}
-          onShowUpload={() => setShowUploadModal(true)}
+          onShowUpload={handleUploadAttempt}
         />
       </>
     );
@@ -255,7 +267,7 @@ export default function Home() {
             <h2 className="text-xl xs:text-2xl font-bold text-gray-900 mb-2">No reels yet</h2>
             <p className="text-gray-600 mb-4 xs:mb-6 text-sm xs:text-base">Be the first to share an amazing reel!</p>
             <button 
-              onClick={() => setShowUploadModal(true)}
+              onClick={handleUploadAttempt}
               className="bg-gradient-to-r from-purple-600 to-pink-600 text-white px-4 xs:px-6 py-2.5 xs:py-3 rounded-lg font-semibold hover:from-purple-700 hover:to-pink-700 transition-all transform hover:scale-105 flex items-center gap-2 mx-auto text-sm xs:text-base"
             >
               <Plus className="w-4 h-4 xs:w-5 xs:h-5" />
@@ -336,7 +348,7 @@ export default function Home() {
             setShowReelsView(true);
           }
         }}
-        onShowUpload={() => setShowUploadModal(true)}
+        onShowUpload={handleUploadAttempt}
       />
 
       {/* Upload Modal */}
@@ -349,6 +361,12 @@ export default function Home() {
           />
         )}
       </AnimatePresence>
+
+      {/* Plan Limit Notification */}
+      <PlanLimitNotification
+        isVisible={showPlanLimitNotification}
+        onClose={() => setShowPlanLimitNotification(false)}
+      />
     </div>
   );
 }
