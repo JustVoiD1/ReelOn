@@ -134,18 +134,8 @@ export default function Home() {
                 animate={{ opacity: 1, x: 0 }}
                 className="flex items-center space-x-2 xs:space-x-4"
               >
-                <Link
-                  href="/login"
-                  className="text-white hover:text-gray-200 transition-colors text-sm xs:text-base"
-                >
-                  Sign In
-                </Link>
-                <Link
-                  href="/register"
-                  className="bg-white text-purple-600 hover:bg-gray-100 px-3 xs:px-4 py-1.5 xs:py-2 rounded-lg transition-colors font-medium text-sm xs:text-base"
-                >
-                  Sign Up
-                </Link>
+                
+                
               </motion.div>
             </div>
           </div>
@@ -174,14 +164,20 @@ export default function Home() {
                 href="/register"
                 className="inline-block bg-white text-purple-600 hover:bg-gray-100 px-6 xs:px-8 py-2.5 xs:py-3 rounded-lg font-semibold text-base xs:text-lg transition-colors transform hover:scale-105"
               >
-                Get Started
+                Sign Up
               </Link>
               <p className="text-white/60 text-sm xs:text-base">
                 Already have an account?{' '}
-                <Link href="/login" className="text-white hover:underline">
+          
+              </p>
+            </div>
+            <div className='my-2 mx-2'>
+              <Link
+                  href="/login"
+                  className="bg-white text-black hover:text-orange-700 hover:bg-gray-100 px-4 xs:px-4 py-2 xs:py-4 rounded-lg transition-colors font-medium text-sm xs:text-base"
+                >
                   Sign in
                 </Link>
-              </p>
             </div>
           </motion.div>
 
