@@ -210,6 +210,7 @@ const FileUpload = ({ onUploadComplete, onClose, isModal = false }: FileUploadPr
                 publicKey,
                 file: selectedFile,
                 fileName: selectedFile.name,
+                folder: "/reel-on", // Upload to reel-on folder
                 // Progress callback to update upload progress state
                 onProgress: (event) => {
                     setProgress((event.loaded / event.total) * 100);

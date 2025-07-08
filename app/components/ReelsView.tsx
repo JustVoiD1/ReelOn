@@ -43,12 +43,7 @@ const ReelsView: React.FC<ReelsViewProps> = ({
         title: title,
         description: description,
         videoUrl: response.url,
-        thumbnailUrl: response.thumbnailUrl || response.url,
-        transformation: {
-          height: 1920,
-          width: 1080,
-          quality: 80
-        }
+        thumbnailUrl: response.thumbnailUrl || response.url
       };
 
       const newVideo = await apiClient.createVideo(videoData);

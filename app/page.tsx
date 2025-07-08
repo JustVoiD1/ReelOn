@@ -11,7 +11,7 @@ import VideoPlayer from './components/VideoPlayer';
 import AutoPlayVideoPlayer from './components/AutoPlayVideoPlayer';
 import ReelsView from './components/ReelsView';
 import BottomNavigation from './components/BottomNavigation';
-import PlanLimitNotification from './components/PlanLimitNotification';
+// import PlanLimitNotification from './components/PlanLimitNotification';
 import { IKUploadResponse } from 'imagekitio-next/dist/types/components/IKUpload/props';
 import { Plus, Heart, MessageCircle, Share2, User, Play } from 'lucide-react';
 
@@ -46,12 +46,7 @@ export default function Home() {
         title: title,
         description: description,
         videoUrl: response.url,
-        thumbnailUrl: response.thumbnailUrl || response.url,
-        transformation: {
-          height: 1920,
-          width: 1080,
-          quality: 80
-        }
+        thumbnailUrl: response.thumbnailUrl || response.url
       };
 
       console.log('Saving video data:', videoData);
@@ -359,10 +354,10 @@ export default function Home() {
       </AnimatePresence>
 
       {/* Plan Limit Notification */}
-      <PlanLimitNotification
+      {/* <PlanLimitNotification
         isVisible={showPlanLimitNotification}
         onClose={() => setShowPlanLimitNotification(false)}
-      />
+      /> */}
     </div>
   );
 }
