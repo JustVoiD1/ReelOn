@@ -1,7 +1,8 @@
 import { IVideo } from "@/models/video"
+import { VideoFormData } from "./types";
 
 
-export type videoFormData = Omit<IVideo, "_id">
+
 
 
 //customised fetch
@@ -43,7 +44,7 @@ class ApiClient {
     async getAVideo(id: string){
         return this.fetch<IVideo>(`/videos/${id}`)
     }
-    async createVideo(videoData : videoFormData){
+    async createVideo(videoData : VideoFormData){
         return this.fetch<IVideo>(`/videos`,{
             method: "POST",
             body: videoData

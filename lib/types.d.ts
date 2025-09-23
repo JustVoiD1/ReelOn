@@ -7,4 +7,11 @@ declare global {
     }
 }
 
+export type VideoFormData = {
+  title: string,
+  description: string,
+  videoUrl: string,
+  thumbnailUrl: string
+}
+
 export{};

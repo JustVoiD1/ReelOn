@@ -3,7 +3,8 @@ import { connectToDB } from "@/lib/db"
 import Video, { IVideo } from "@/models/video";
 import { getServerSession } from "next-auth";
 import { NextRequest, NextResponse } from "next/server";
-
+import { VideoFormData } from "@/lib/types";
+import User from "@/models/user";
 export async function GET() {
     try {
         await connectToDB();
@@ -33,12 +34,12 @@ export async function POST(request: NextRequest) {
             )
         }
         await connectToDB();
-        const body: IVideo = await request.json();
+        const {title, description, videoUrl, thumbnailUrl}: VideoFormData = await request.json();
         if (
-            !body.title ||
-            !body.description ||
-            !body.videoUrl ||
-            !body.thumbnailUrl
+            !title ||
+            !description ||
+            !videoUrl ||
+            !thumbnailUrl
         ) {
             return NextResponse.json(
                 { error: "Missing required fields" },
@@ -46,9 +47,30 @@ export async function POST(request: NextRequest) {
             )
         }
 
-        const videoData = {
-            ...body,
-            controls: body.controls ?? true
+        const currentUser = await User.findOne({email: session.user.email})
+        if(!currentUser){
+            return NextResponse.json({
+                success: false,
+                error: 'User Not found'
+            }, {
+                status: 404
+            })
+        }
+
+        const videoData : Omit<IVideo, '_id'> = {
+            title,
+            description,
+            videoUrl,
+            thumbnailUrl,
+            controls: true,
+            creator: currentUser._id,
+            likesCount: 0,
+            commentsCount: 0,
+            viewsCount: 0,
+            // default no tags
+            hashtags: [],
+            isPublic: true,
+            allowComments: false
         }
         const newVideo = await Video.create(videoData)
         return NextResponse.json(newVideo)

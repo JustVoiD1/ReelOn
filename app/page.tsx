@@ -12,7 +12,10 @@ import ReelsView from './components/ReelsView';
 import BottomNavigation from './components/BottomNavigation';
 // import PlanLimitNotification from './components/PlanLimitNotification';
 import { IKUploadResponse } from 'imagekitio-next/dist/types/components/IKUpload/props';
-import { Plus, Heart, MessageCircle, Share2, User, Play } from 'lucide-react';
+import { Plus, Play } from 'lucide-react';
+import { VideoFormData } from '@/lib/types';
+
+
 
 export default function Home() {
   const { data: session, status } = useSession();
@@ -39,9 +42,9 @@ export default function Home() {
       console.log('Video URL:', response.url);
       console.log('Title:', title);
       console.log('Description:', description);
-      
+
       // Create video record in the database
-      const videoData = {
+      const videoData: VideoFormData = {
         title: title,
         description: description,
         videoUrl: response.url,
@@ -51,7 +54,7 @@ export default function Home() {
       console.log('Saving video data:', videoData);
       const newVideo = await apiClient.createVideo(videoData);
       console.log('Video saved:', newVideo);
-      
+
       setVideos(prev => [newVideo, ...prev]);
       setShowUploadModal(false);
     } catch (error) {
@@ -86,7 +89,7 @@ export default function Home() {
           setShowReelsView(false);
           setCurrentView('home');
         }} />
-        <BottomNavigation 
+        <BottomNavigation
           currentView="reels"
           onNavigate={(view) => {
             if (view === 'home') {
@@ -116,20 +119,20 @@ export default function Home() {
         <nav className="bg-white/10 backdrop-blur-sm border-b border-white/20">
           <div className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-8">
             <div className="flex flex-col xs:flex-row justify-between items-center py-3 xs:py-4 gap-2 xs:gap-0">
-              <motion.div 
+              <motion.div
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
                 className="flex items-center"
               >
                 <h1 className="text-xl xs:text-2xl font-bold text-white">🎬 Reel-On</h1>
               </motion.div>
-              <motion.div 
+              <motion.div
                 initial={{ opacity: 0, x: 20 }}
                 animate={{ opacity: 1, x: 0 }}
                 className="flex items-center space-x-2 xs:space-x-4"
               >
-                
-                
+
+
               </motion.div>
             </div>
           </div>
@@ -137,7 +140,7 @@ export default function Home() {
 
         {/* Hero Section */}
         <main className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-8 py-10 xs:py-20">
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             className="text-center"
@@ -152,7 +155,7 @@ export default function Home() {
             <p className="text-base xs:text-xl text-white/80 mb-6 xs:mb-8 max-w-3xl mx-auto px-2">
               Create, share, and discover amazing short videos. Join the community and express yourself through engaging reels.
             </p>
-            
+
             <div className="space-y-3 xs:space-y-4">
               <Link
                 href="/register"
@@ -162,21 +165,21 @@ export default function Home() {
               </Link>
               <p className="text-white/60 text-sm xs:text-base">
                 Already have an account?{' '}
-          
+
               </p>
             </div>
             <div className='my-2 mx-2'>
               <Link
-                  href="/login"
-                  className="bg-white text-black hover:text-orange-700 hover:bg-gray-100 px-4 xs:px-4 py-2 xs:py-4 rounded-lg transition-colors font-medium text-sm xs:text-base"
-                >
-                  Sign in
-                </Link>
+                href="/login"
+                className="bg-white text-black hover:text-orange-700 hover:bg-gray-100 px-4 xs:px-4 py-2 xs:py-4 rounded-lg transition-colors font-medium text-sm xs:text-base"
+              >
+                Sign in
+              </Link>
             </div>
           </motion.div>
 
           {/* Features */}
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0, y: 40 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.3 }}
@@ -216,7 +219,7 @@ export default function Home() {
       <nav className="bg-white shadow-sm border-b sticky top-0 z-50">
         <div className="max-w-6xl mx-auto px-3 sm:px-4 lg:px-8">
           <div className="flex justify-between items-center py-3 xs:py-4">
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               className="flex items-center"
@@ -225,7 +228,7 @@ export default function Home() {
                 🎬 Reel-On
               </h1>
             </motion.div>
-            
+
             <div className="flex items-center">
               <span className="text-gray-700 text-sm xs:text-base">
                 Welcome, {(session.user as any)?.username || session.user?.email?.split('@')[0]}
@@ -248,7 +251,7 @@ export default function Home() {
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600"></div>
           </div>
         ) : videos.length === 0 ? (
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             className="text-center py-12 xs:py-20 px-4"
@@ -256,7 +259,7 @@ export default function Home() {
             <div className="text-4xl xs:text-6xl mb-3 xs:mb-4">📹</div>
             <h2 className="text-xl xs:text-2xl font-bold text-gray-900 mb-2">No reels yet</h2>
             <p className="text-gray-600 mb-4 xs:mb-6 text-sm xs:text-base">Be the first to share an amazing reel!</p>
-            <button 
+            <button
               onClick={handleUploadAttempt}
               className="bg-gradient-to-r from-purple-600 to-pink-600 text-white px-4 xs:px-6 py-2.5 xs:py-3 rounded-lg font-semibold hover:from-purple-700 hover:to-pink-700 transition-all transform hover:scale-105 flex items-center gap-2 mx-auto text-sm xs:text-base"
             >
@@ -288,7 +291,7 @@ export default function Home() {
                   className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow"
                 >
                   <div className="aspect-video bg-gray-200 flex items-center justify-center relative overflow-hidden rounded-t-lg group cursor-pointer"
-                       onClick={() => setShowReelsView(true)}>
+                    onClick={() => setShowReelsView(true)}>
                     {video.videoUrl ? (
                       <AutoPlayVideoPlayer
                         src={video.videoUrl}
@@ -330,7 +333,7 @@ export default function Home() {
       </main>
 
       {/* Bottom Navigation */}
-      <BottomNavigation 
+      <BottomNavigation
         currentView={currentView}
         onNavigate={(view) => {
           setCurrentView(view);
