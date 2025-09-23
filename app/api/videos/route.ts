@@ -12,7 +12,8 @@ export async function GET() {
             return NextResponse.json([], { status: 200 })
         }
         return NextResponse.json(videos)
-    } catch (error) {
+    } catch (err) {
+        console.error('Video fetch error: ', err)
         return NextResponse.json(
             { error: "Failed to fetch videos" },
             { status: 400 }
@@ -49,12 +50,13 @@ export async function POST(request: NextRequest) {
             ...body,
             controls: body.controls ?? true
         }
-        let newVideo = await Video.create(videoData)
+        const newVideo = await Video.create(videoData)
         return NextResponse.json(newVideo)
 
 
 
-    } catch (error) {
+    } catch (err) {
+        console.error('Video Creation Error: ',err)
         return NextResponse.json(
             { error: "Failed to create a video" },
             { status: 400 },

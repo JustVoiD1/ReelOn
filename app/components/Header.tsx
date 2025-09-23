@@ -8,8 +8,8 @@ const Header = () => {
     const handleSignOut = async () => {
         try {
             await signOut()
-        } catch (error) {
-
+        } catch (err) {
+            console.error('Sign out Error : ', err)
         }
     }
 

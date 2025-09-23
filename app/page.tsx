@@ -7,7 +7,6 @@ import { apiClient } from '@/lib/api-client';
 import { IVideo } from '@/models/video';
 import React, { useEffect, useState } from 'react';
 import FileUpload from './components/FileUpload';
-import VideoPlayer from './components/VideoPlayer';
 import AutoPlayVideoPlayer from './components/AutoPlayVideoPlayer';
 import ReelsView from './components/ReelsView';
 import BottomNavigation from './components/BottomNavigation';

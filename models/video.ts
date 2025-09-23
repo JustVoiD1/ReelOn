@@ -16,7 +16,16 @@ export interface IVideo {
     videoUrl: string,
     thumbnailUrl: string,
     controls?: boolean,
-    
+    creator: ObjectId
+    likesCount: number,
+    commentsCount: number,
+    viewsCount: number
+
+    hashtags: string[],
+
+    isPublic: boolean,
+    allowComments: boolean,
+
     createdAt?: Date;
     updatedAt?: Date;
 
@@ -24,15 +33,26 @@ export interface IVideo {
 }
 
 const videoSchema = new Schema<IVideo>({
-    title: { type: String, required: true },
-    description: { type: String, required: true },
+    title: { type: String, required: true , maxlength: 100},
+    description: { type: String, required: true, maxlength: 300 },
     videoUrl: { type: String, required: true },
     thumbnailUrl: { type: String, required: true },
     controls: { type: Boolean, default: true },
-    createdAt: Date,
-    updatedAt: Date,
-},
-    { timestamps: true })
+    creator: {type: Schema.Types.ObjectId, ref: 'User', required: true},
+    likesCount: {type: Number, default: 0},
+    commentsCount: {type: Number, default: 0},
+
+    hashtags: [{type: String, lowercase: true}],
+
+    isPublic: {type: Boolean, default: true},
+    allowComments: {type : Boolean, default : true},
+}, { 
+    timestamps: true 
+})
+
+videoSchema.index({ createdAt: -1 });
+videoSchema.index({ hashtags: 1 });
+videoSchema.index({ creator: 1, createdAt: -1 });
 
 const Video = models.Video || model<IVideo>("Video", videoSchema)
 

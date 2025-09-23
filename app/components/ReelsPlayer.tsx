@@ -3,6 +3,8 @@
 import React, { useRef, useState, useEffect } from 'react';
 import { Heart, MessageCircle, Share, MoreHorizontal, Play, Pause, Home, Search, Plus, Video, User } from 'lucide-react';
 import { IVideo } from '@/models/video';
+import { useSession } from 'next-auth/react';
+import { checkLiked, likeVideo } from '@/lib/api-action-helpers';
 
 interface ReelsPlayerProps {
   video: IVideo;
@@ -19,23 +21,91 @@ const ReelsPlayer: React.FC<ReelsPlayerProps> = ({ video, isActive, index, globa
   const [hasError, setHasError] = useState(false);
   const [showControls, setShowControls] = useState(false);
 
-  const handleLike = () => {
-    console.log("Liked");
-    
+  const [isLiked, setIsLiked] = useState(false)
+  const [likesCount, setLikesCount] = useState(video.likesCount || 0)
+  const [isLikeLoading, setIsLikeLoading] = useState(false)
+  const [likeStatusChecked, setLikeStatusChecked] = useState(false)
+
+
+  const { data: session } = useSession()
+
+
+
+  const handleLike = async () => {
+    if (!session?.user) {
+      console.log('Please login to like')
+      return;
+    }
+
+    if (isLikeLoading || !likeStatusChecked) return;
+    setIsLikeLoading(true)
+    try {
+      const result = await likeVideo(video._id!.toString())
+      if (result.liked !== undefined) { // ✅ Check if liked property exists
+        setIsLiked(result.liked)
+
+        if (result.liked) {
+          setLikesCount(c => c + 1);
+        }
+        else {
+          setLikesCount(c => c - 1);
+        }
+      }
+      else {
+        console.error('Failed to like the video', result.error)
+      }
+    } catch (err) {
+      console.error('Error liking video: ', err)
+    } finally {
+      setIsLikeLoading(false) // ✅ Always reset loading state
+    }
   }
   const handleComment = () => {
     console.log("Commented");
-    
+
   }
   const handleShare = () => {
     console.log("Share triggered");
-    
+
   }
   const handleOpt = () => {
     console.log("Options triggered");
-    
+
   }
-  
+
+  useEffect(() => {
+    const checkLikeStatus = async () => {
+      console.log('🔍 Checking like status for video:', video._id) // ADD THIS
+      console.log('🔍 Session user:', session?.user?.email) // ADD THIS
+      if (session?.user && video._id) {
+        try {
+          const result = await checkLiked(video._id.toString())
+          console.log('🔍 Like check result:', result) // ADD THIS
+
+          if (result.success) { // ✅ More consistent check
+            console.log('Setting isLiked to: ', result.isLiked)
+            setIsLiked(result.isLiked)
+          }
+          else {
+            console.log('Like Check failed: ', result)
+          }
+        } catch (err) {
+          console.error('Error checking like status', err)
+
+        } finally {
+          setLikeStatusChecked(true)
+        }
+      }
+      else {
+        console.log('🔍 No session or video ID')
+        setLikeStatusChecked(true)
+      }
+    }
+
+    checkLikeStatus()
+  }, [session, video._id])
+
+
 
   // Update muted state when global muted changes
   useEffect(() => {
@@ -125,9 +195,20 @@ const ReelsPlayer: React.FC<ReelsPlayerProps> = ({ video, isActive, index, globa
   const toggleMute = () => {
     const video = videoRef.current;
     if (!video) return;
-    
+
     video.muted = !video.muted;
     setIsMuted(video.muted);
+  };
+
+
+  const formatNumber = (num: number): string => {
+    if (num >= 1000000) {
+      return (num / 1000000).toFixed(1) + 'M';
+    }
+    if (num >= 1000) {
+      return (num / 1000).toFixed(1) + 'K';
+    }
+    return num.toString();
   };
 
   if (hasError) {
@@ -179,9 +260,11 @@ const ReelsPlayer: React.FC<ReelsPlayerProps> = ({ video, isActive, index, globa
         {/* Like */}
         <button className="flex flex-col items-center text-white hover:scale-110 transition-transform" onClick={handleLike}>
           <div className="bg-black/30 p-3 rounded-full hover:bg-black/50 transition-colors">
-            <Heart className="w-6 h-6" />
+            <Heart
+              className={`w-6 h-6 transition-colors ${isLiked ? 'fill-red-400 text-red-400' : 'fill-transparent text-white hover:text-red-500'}`}
+            />
           </div>
-          <span className="text-xs mt-1 font-semibold">170K</span>
+          <span className="text-xs mt-1 font-semibold">{formatNumber(likesCount)}</span>
         </button>
 
         {/* Comment */}
@@ -206,8 +289,8 @@ const ReelsPlayer: React.FC<ReelsPlayerProps> = ({ video, isActive, index, globa
           </div>
         </button>
 
-       
-        
+
+
       </div>
 
       {/* Bottom Info */}
@@ -216,7 +299,7 @@ const ReelsPlayer: React.FC<ReelsPlayerProps> = ({ video, isActive, index, globa
           <div className="flex items-center space-x-2 mb-3">
             <div className="w-8 h-8 bg-gradient-to-r from-purple-400 to-pink-400 rounded-full flex items-center justify-center">
               <span className="text-white text-xs font-bold">
-                U
+                {video.creator ? 'U' : 'U'}
               </span>
             </div>
             <span className="text-white text-sm font-medium">@user</span>

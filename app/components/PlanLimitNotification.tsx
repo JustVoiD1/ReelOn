@@ -31,7 +31,7 @@ const PlanLimitNotification: React.FC<PlanLimitNotificationProps> = ({
                     Video Upload Limitation Notice
                   </h3>
                   <p className="text-xs md:text-sm text-white/90 mt-1">
-                    Very sorry to let you know my video transformation limits exceeded. You can still choose to upload a video and see how the process looks like but the video won't play. You can enjoy other reels 
+                    Very sorry to let you know my video transformation limits exceeded. You can still choose to upload a video and see how the process looks like but the video won&apos;t play. You can enjoy other reels 
                   </p>
                 </div>
               </div>
