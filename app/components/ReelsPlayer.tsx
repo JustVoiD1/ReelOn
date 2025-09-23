@@ -33,7 +33,7 @@ const ReelsPlayer: React.FC<ReelsPlayerProps> = ({ video, isActive, index, globa
 
   const handleLike = async () => {
     if (!session?.user) {
-      console.log('Please login to like')
+      // console.log('Please login to like')
       return;
     }
 
@@ -61,33 +61,28 @@ const ReelsPlayer: React.FC<ReelsPlayerProps> = ({ video, isActive, index, globa
     }
   }
   const handleComment = () => {
-    console.log("Commented");
+    // console.log("Commented");
 
   }
   const handleShare = () => {
-    console.log("Share triggered");
+    // console.log("Share triggered");
 
   }
   const handleOpt = () => {
-    console.log("Options triggered");
+    // console.log("Options triggered");
 
   }
 
   useEffect(() => {
     const checkLikeStatus = async () => {
-      console.log('🔍 Checking like status for video:', video._id) // ADD THIS
-      console.log('🔍 Session user:', session?.user?.email) // ADD THIS
       if (session?.user && video._id) {
         try {
           const result = await checkLiked(video._id.toString())
-          console.log('🔍 Like check result:', result) // ADD THIS
 
           if (result.success) { // ✅ More consistent check
-            console.log('Setting isLiked to: ', result.isLiked)
             setIsLiked(result.isLiked)
           }
           else {
-            console.log('Like Check failed: ', result)
           }
         } catch (err) {
           console.error('Error checking like status', err)
@@ -97,7 +92,6 @@ const ReelsPlayer: React.FC<ReelsPlayerProps> = ({ video, isActive, index, globa
         }
       }
       else {
-        console.log('🔍 No session or video ID')
         setLikeStatusChecked(true)
       }
     }
@@ -141,7 +135,7 @@ const ReelsPlayer: React.FC<ReelsPlayerProps> = ({ video, isActive, index, globa
 
     const handleLoadedData = () => {
       setIsLoading(false);
-      console.log('Video loaded successfully');
+      // console.log('Video loaded successfully');
     };
 
     const handleError = (e: Event) => {

@@ -43,7 +43,7 @@ const FileUpload = ({ onUploadComplete, onClose, isModal = false }: FileUploadPr
     };
 
     const handleSuccess = (response: IKUploadResponse) => {
-        console.log("Upload successful:", response);
+        // console.log("Upload successful:", response);
         setUploading(false);
         setUploadSuccess(true);
         setError(null);

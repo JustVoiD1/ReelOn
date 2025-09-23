@@ -75,7 +75,7 @@ const AutoPlayVideoPlayer: React.FC<AutoPlayVideoPlayerProps> = ({
 
     const handleLoadedMetadata = () => {
       setIsLoading(false);
-      console.log('Video loaded successfully');
+      // console.log('Video loaded successfully');
     };
 
     const handlePlay = () => setIsPlaying(true);

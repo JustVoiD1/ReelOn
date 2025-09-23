@@ -38,10 +38,10 @@ export default function Home() {
 
   const handleUploadComplete = async (response: IKUploadResponse, title: string, description: string) => {
     try {
-      console.log('Upload completed:', response);
-      console.log('Video URL:', response.url);
-      console.log('Title:', title);
-      console.log('Description:', description);
+      // console.log('Upload completed:', response);
+      // console.log('Video URL:', response.url);
+      // console.log('Title:', title);
+      // console.log('Description:', description);
 
       // Create video record in the database
       const videoData: VideoFormData = {
@@ -51,9 +51,9 @@ export default function Home() {
         thumbnailUrl: response.thumbnailUrl || response.url
       };
 
-      console.log('Saving video data:', videoData);
+      // console.log('Saving video data:', videoData);
       const newVideo = await apiClient.createVideo(videoData);
-      console.log('Video saved:', newVideo);
+      // console.log('Video saved:', newVideo);
 
       setVideos(prev => [newVideo, ...prev]);
       setShowUploadModal(false);

@@ -32,7 +32,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
     const handleLoadedMetadata = () => {
       setDuration(video.duration);
       setIsLoading(false);
-      console.log('Video loaded successfully, duration:', video.duration);
+      // console.log('Video loaded successfully, duration:', video.duration);
     };
 
     const handleTimeUpdate = () => {
