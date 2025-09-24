@@ -536,7 +536,7 @@ const ReelsPlayer: React.FC<ReelsPlayerProps> = ({ video, isActive, index, globa
                   <div className="flex-1">
                     <div className="flex items-center space-x-2">
                       {/* username */}
-                      <span className="text-black font-medium text-sm">
+                      <span className="text-black text-sm font-semibold">
                         {comment.author?.username || 'User'}
                       </span>
 
