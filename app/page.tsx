@@ -12,8 +12,9 @@ import ReelsView from './components/ReelsView';
 import BottomNavigation from './components/BottomNavigation';
 // import PlanLimitNotification from './components/PlanLimitNotification';
 import { IKUploadResponse } from 'imagekitio-next/dist/types/components/IKUpload/props';
-import { Plus, Play } from 'lucide-react';
+import { Plus, Play, Heart, MessageCircleIcon, Share2Icon } from 'lucide-react';
 import { VideoFormData } from '@/lib/types';
+import { checkLiked, likeVideo } from '@/lib/api-action-helpers';
 
 
 
@@ -25,6 +26,88 @@ export default function Home() {
   const [showReelsView, setShowReelsView] = useState(false);
   const [currentView, setCurrentView] = useState<'home' | 'reels'>('home');
   const [showPlanLimitNotification, setShowPlanLimitNotification] = useState(false);
+  const [likedVideos, setLikedVideos] = useState<Set<string>>(new Set())
+  const [likingVideos, setLikingVideos] = useState<Set<string>>(new Set())
+
+  const handleLike = async (videoId: string) => {
+    if (!session?.user) {
+      console.log('Login to continue')
+      return;
+    }
+
+    if (likingVideos.has(videoId)) return;
+    setLikingVideos(c => new Set(c).add(videoId))
+
+    try {
+      const result = await likeVideo(videoId)
+      if (result.liked !== undefined) {
+        setLikedVideos(c => {
+          const newSet = new Set(c);
+          if (result.liked) {
+            newSet.add(videoId)
+          }
+          else {
+            newSet.delete(videoId)
+          }
+          return newSet
+        })
+
+
+        setVideos(c => c.map(video =>
+          video._id?.toString() === videoId
+            ? {
+              ...video,
+              likesCount: result.liked
+                ? (video.likesCount || 0) + 1
+                : Math.max((video.likesCount || 0) - 1, 0)
+            }
+            : video
+        ));
+
+      }
+    } catch (err) {
+      console.error('Error liking video: ', err)
+    } finally {
+      setLikingVideos(c => {
+        const newSet = new Set(c)
+        newSet.delete(videoId)
+        return newSet
+      })
+    }
+  }
+
+
+  useEffect(() => {
+    const checkLikeStatuses = async () => {
+      if (session?.user && videos.length > 0) {
+        const likeStatuses = await Promise.all(
+          videos.map(async (video) => {
+            if (video._id) {
+              try {
+                const result = await checkLiked(video._id.toString());
+                return { videoId: video._id.toString(), isLiked: result.isLiked };
+              } catch (err) {
+                console.error('Error checking like status:', err);
+                return { videoId: video._id.toString(), isLiked: false };
+              }
+            }
+            return null;
+          })
+        );
+
+        const likedVideoIds = likeStatuses
+          .filter(status => status?.isLiked)
+          .map(status => status!.videoId);
+
+        setLikedVideos(new Set(likedVideoIds));
+      }
+    };
+
+    checkLikeStatuses();
+  }, [session, videos]);
+
+
+
 
   // Handle upload attempt - show notification and then allow upload
   const handleUploadAttempt = () => {
@@ -61,6 +144,8 @@ export default function Home() {
       console.error("Error creating video record:", error);
     }
   };
+
+
 
   useEffect(() => {
     const fetchVideos = async () => {
@@ -307,20 +392,28 @@ export default function Home() {
                     )}
                   </div>
                   <div className="p-3 xs:p-4">
-                    <h3 className="font-semibold text-gray-900 mb-1 text-sm xs:text-base line-clamp-1">{video.title}</h3>
-                    <p className="text-gray-600 text-xs xs:text-sm line-clamp-2">{video.description}</p>
+                    <h3 className="font-semibold text-gray-900 mb-1 text-lg xs:text-base line-clamp-1">{video.title}</h3>
+                    <p className="text-gray-600 text-mdm xs:text-sm line-clamp-2">{video.description}</p>
                     <div className="flex items-center justify-between mt-2 xs:mt-3">
                       <div className="flex space-x-3 xs:space-x-4 text-gray-500">
-                        <button className="flex items-center space-x-1 hover:text-red-500 transition-colors">
-                          <span className="text-sm xs:text-base">❤️</span>
-                          <span className="text-xs xs:text-sm">0</span>
+                        <button className="flex items-center space-x-1 hover:text-red-500 transition-colors"
+                          onClick={() => handleLike(video._id?.toString() || '')}>
+                          <span className="text-lg xs:text-base"><Heart
+                            className={`transition-colors ${likedVideos.has(video._id?.toString() || '')
+                                ? 'fill-red-500 text-red-500'
+                                : 'fill-transparent hover:text-red-500'
+                              }`}
+                          /></span>
+                          <span className="text-lg xs:text-sm">{video.likesCount}</span>
+                        </button>
+                        <button className="flex items-center space-x-1 hover:text-pink-500 transition-colors"
+                         
+                        >
+                          <span className="text-lg xs:text-base"><MessageCircleIcon /></span>
+                          <span className="text-lg xs:text-sm">{video.commentsCount}</span>
                         </button>
                         <button className="flex items-center space-x-1 hover:text-blue-500 transition-colors">
-                          <span className="text-sm xs:text-base">💬</span>
-                          <span className="text-xs xs:text-sm">0</span>
-                        </button>
-                        <button className="flex items-center space-x-1 hover:text-green-500 transition-colors">
-                          <span className="text-sm xs:text-base">🔗</span>
+                          <span className="text-lg xs:text-base"><Share2Icon /></span>
                         </button>
                       </div>
                     </div>

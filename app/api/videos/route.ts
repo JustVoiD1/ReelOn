@@ -8,7 +8,9 @@ import User from "@/models/user";
 export async function GET() {
     try {
         await connectToDB();
-        const videos = await Video.find({}).sort({ createdAt: -1 })
+        // const videos = await Video.find({}).sort({ createdAt: -1 })
+        const videos = await Video.find({}).populate('creator' ,'username displayName, profilePicture')
+        .sort({createdAt: -1})
         if (!videos || videos.length === 0) {
             return NextResponse.json([], { status: 200 })
         }

@@ -37,10 +37,10 @@ const FileUpload = ({ onUploadComplete, onClose, isModal = false }: FileUploadPr
         setProgress(0);
     };
 
-    const handleProgress = (evt: ProgressEvent) => {
-        const percentComplete = (evt.loaded / evt.total) * 100;
-        setProgress(percentComplete);
-    };
+    // const handleProgress = (evt: ProgressEvent) => {
+    //     const percentComplete = (evt.loaded / evt.total) * 100;
+    //     setProgress(percentComplete);
+    // };
 
     const handleSuccess = (response: IKUploadResponse) => {
         // console.log("Upload successful:", response);

@@ -58,7 +58,8 @@ export async function POST(request: NextRequest) {
 
         )
 
-    } catch (error) {
+    } catch (err) {
+        console.error('Error while registering: ',err)
         return NextResponse.json({
                 error: "Failed to register",
             },

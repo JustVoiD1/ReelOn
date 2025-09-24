@@ -1,10 +1,11 @@
 'use client';
 
 import React, { useRef, useState, useEffect } from 'react';
-import { Heart, MessageCircle, Share, MoreHorizontal, Play, Pause, Home, Search, Plus, Video, User } from 'lucide-react';
+import { Heart, MessageCircle, Share, MoreHorizontal, Play, X, HeartIcon } from 'lucide-react';
 import { IVideo } from '@/models/video';
 import { useSession } from 'next-auth/react';
-import { checkLiked, likeVideo } from '@/lib/api-action-helpers';
+import { addComment, checkCommentLiked, checkLiked, getComments, likeComment, likeVideo } from '@/lib/api-action-helpers';
+import { IComment } from '@/models/comment';
 
 interface ReelsPlayerProps {
   video: IVideo;
@@ -27,9 +28,119 @@ const ReelsPlayer: React.FC<ReelsPlayerProps> = ({ video, isActive, index, globa
   const [likeStatusChecked, setLikeStatusChecked] = useState(false)
 
 
+
+  const [commentsCount, setCommentsCount] = useState(video.commentsCount || 0)
+  const [showComments, setShowComments] = useState(false)
+  const [comments, setComments] = useState<IComment[]>([])
+  const [newComment, setNewComment] = useState('')
+  const [isCommenting, setIsCommenting] = useState(false)
+  const [commentsLoading, setCommentsLoading] = useState(false)
+  const [commentLikes, setCommentLikes] = useState<Record<string, boolean>>({})
+  const [commentLikeCounts, setCommentLikeCounts] = useState<Record<string, number>>({})
+  const [likingComments, setLikingComments] = useState<Set<string>>(new Set())
+
+
+
+
+
+
+
   const { data: session } = useSession()
 
 
+  const handleCommentLike = async (commentId: string) => {
+    if (!session?.user) {
+      alert('Please login to like comments');
+      return;
+    }
+
+    if (likingComments.has(commentId)) return;
+
+    setLikingComments(prev => new Set(prev).add(commentId));
+
+    // Optimistic update
+    const wasLiked = commentLikes[commentId] || false;
+    const currentCount = commentLikeCounts[commentId] || 0;
+
+    setCommentLikes(prev => ({
+      ...prev,
+      [commentId]: !wasLiked
+    }));
+
+    setCommentLikeCounts(prev => ({
+      ...prev,
+      [commentId]: wasLiked ? currentCount - 1 : currentCount + 1
+    }));
+
+    try {
+      const result = await likeComment(commentId);
+      if (result.liked !== undefined) {
+        const originalCnt = comments.find(c => c._id?.toString() === commentId)?.likesCount || 0;
+        const newCount = result.liked ? originalCnt + 1 : Math.max(originalCnt - 1, 0);
+
+        setCommentLikes(prev => ({
+          ...prev,
+          [commentId]: result.liked
+        }));
+
+        setCommentLikeCounts(prev => ({
+          ...prev,
+          [commentId]: newCount
+        }));
+
+        // Update the comments array with new count
+        setComments(prev => prev.map(comment =>
+          comment._id?.toString() === commentId
+            ? { ...comment, likesCount: newCount }
+            : comment
+        ));
+      }
+      else {
+        // Revert on error
+        setCommentLikes(prev => ({
+          ...prev,
+          [commentId]: wasLiked
+        }));
+        setCommentLikeCounts(prev => ({
+          ...prev,
+          [commentId]: comments.find(c => c._id?.toString() === commentId)?.likesCount || 0
+        }));
+      }
+    } catch (err) {
+      console.error('Error liking comment:', err);
+      // Revert on error
+      setCommentLikes(prev => ({
+        ...prev,
+        [commentId]: wasLiked
+      }));
+      setCommentLikeCounts(prev => ({
+        ...prev,
+        [commentId]: comments.find(c => c._id?.toString() === commentId)?.likesCount || 0
+      }));
+    } finally {
+      setLikingComments(prev => {
+        const newSet = new Set(prev);
+        newSet.delete(commentId);
+        return newSet;
+      });
+    }
+  };
+
+  const checkCommentLikeStatus = async (commentId: string) => {
+    if (!session?.user) return;
+
+    try {
+      const result = await checkCommentLiked(commentId);
+      if (result.success) {
+        setCommentLikes(prev => ({
+          ...prev,
+          [commentId]: result.isLiked
+        }));
+      }
+    } catch (err) {
+      console.error('Error checking comment like status:', err);
+    }
+  };
 
   const handleLike = async () => {
     if (!session?.user) {
@@ -62,7 +173,63 @@ const ReelsPlayer: React.FC<ReelsPlayerProps> = ({ video, isActive, index, globa
   }
   const handleComment = () => {
     // console.log("Commented");
+    setShowComments(true)
+    if (comments.length === 0) {
+      loadComments()
+    }
 
+  }
+
+  const loadComments = async () => {
+    if (!video._id) return;
+
+    setCommentsLoading(true)
+    try {
+      const result = await getComments(video._id.toString())
+      if (result.success) {
+        setComments(result.comments || [])
+
+        const likeCounts: { [key: string]: number } = {}
+        result.comments?.forEach((comment: IComment) => {
+          if (comment._id) {
+            likeCounts[comment._id.toString()] = comment.likesCount || 0;
+            // Check if user liked this comment
+            if (session?.user) {
+              checkCommentLikeStatus(comment._id.toString());
+            }
+          }
+          setCommentLikeCounts(likeCounts)
+        })
+      }
+    } catch (err) {
+      console.error('Error loading comments: ', err)
+
+    } finally {
+      setCommentsLoading(false)
+    }
+  }
+
+  const submitComment = async () => {
+    if (!session?.user) {
+      alert('Please, login')
+      return
+    }
+    if (!session?.user || !newComment.trim() || !video._id) return;
+    setIsCommenting(true)
+    try {
+      const result = await addComment(video._id.toString(), newComment.trim())
+      if (result.success) {
+        setComments(prev => [result.comment, ...prev])
+        setCommentsCount(c => c + 1)
+        setNewComment('')
+
+      }
+    } catch (err) {
+      console.error('Error commenting: ', err)
+
+    } finally {
+      setIsCommenting(false)
+    }
   }
   const handleShare = () => {
     // console.log("Share triggered");
@@ -98,6 +265,18 @@ const ReelsPlayer: React.FC<ReelsPlayerProps> = ({ video, isActive, index, globa
 
     checkLikeStatus()
   }, [session, video._id])
+
+  // Close modal and reset input when video changes
+  useEffect(() => {
+    if (isActive && showComments) {
+
+      setShowComments(false);
+      setNewComment(''); // Clear any typed comment
+      setCommentsLoading(false)
+      setIsCommenting(false); // Reset commenting state
+    }
+    // Keep comments in memory so they don't need to reload
+  }, [video._id, isActive]);
 
 
 
@@ -186,13 +365,13 @@ const ReelsPlayer: React.FC<ReelsPlayerProps> = ({ video, isActive, index, globa
     }
   };
 
-  const toggleMute = () => {
-    const video = videoRef.current;
-    if (!video) return;
+  // const toggleMute = () => {
+  //   const video = videoRef.current;
+  //   if (!video) return;
 
-    video.muted = !video.muted;
-    setIsMuted(video.muted);
-  };
+  //   video.muted = !video.muted;
+  //   setIsMuted(video.muted);
+  // };
 
 
   const formatNumber = (num: number): string => {
@@ -249,6 +428,116 @@ const ReelsPlayer: React.FC<ReelsPlayerProps> = ({ video, isActive, index, globa
         </div>
       )}
 
+      {/* Comments Modal */}
+      {showComments && (<div className='wrapper'>
+        <div
+          className="fixed inset-0 bg-black/50 z-[70]"
+          onClick={() => setShowComments(false)}
+        />
+        <div className="absolute inset-x-0 bg-white z-100 flex flex-col h-2/3 bottom-0">
+          {/* Header */}
+          <div className="flex items-center justify-between p-4 border-b border-gray-700">
+            <h3 className="text-black font-semibold text-lg">Comments</h3>
+            <button
+              onClick={() => setShowComments(false)}
+              className="text-black hover:text-gray-600"
+            >
+              <X />
+            </button>
+          </div>
+
+          {/* Comments List */}
+          <div className="flex-1 overflow-y-auto p-4 space-y-4">
+            {commentsLoading ? (
+              <div className="text-black text-center">Loading comments...</div>
+            ) : comments.length > 0 ? (
+              comments.map((comment: any) => (
+                <div key={comment._id?.toString()} className="flex space-x-3">
+                  {/* usericon */}
+                  <div className="w-8 h-8 bg-gradient-to-r from-purple-400 to-pink-400 rounded-full flex items-center justify-center">
+                    <span className="text-black text-xs font-bold">
+                      {comment.author?.username?.[0]?.toUpperCase() || 'U'}
+                    </span>
+                  </div>
+                  <div className="flex-1">
+                    <div className="flex items-center space-x-2">
+                      {/* username */}
+                      <span className="text-black font-medium text-sm">
+                        {comment.author?.username || 'User'}
+                      </span>
+
+                      {/* date */}
+                      <span className="text-gray-700 text-xs">
+                        {new Date(comment.createdAt).toLocaleDateString()}
+                      </span>
+                    </div>
+                    {/* content */}
+                    <p className="text-black text-sm mt-1">{comment.content}</p>
+                  </div>
+                  <div className='flex flex-col items-center justify-center'>
+                    <button
+                      className={`flex items-center space-x-1 text-xs transition-colors ${commentLikes[comment._id] ? 'text-red-500' : 'text-gray-500 hover:text-red-500'
+                        } disabled:opacity-50`}
+                      onClick={() => handleCommentLike(comment._id)}
+                    >
+
+                      <HeartIcon className={`text-pink-400 hover:fill-pink-300 ${commentLikes[comment._id] ? 'fill-red-500 text-red-500' : 'fill-transparent'
+                        }`}
+
+                      />
+                    </button>
+                    <span className='text-gray-500'>{comment.likesCount}</span>
+                  </div>
+                </div>
+              ))
+            ) : (
+              <div className="text-gray-400 text-center">No comments yet</div>
+            )}
+          </div>
+
+          {/* Comment Input */}
+          {/* Comment Input - This should be at the bottom of your modal */}
+          <div className="p-4 border-t border-gray-700">
+            <div className="flex space-x-3">
+              <div className="w-8 h-8 bg-gradient-to-r from-purple-400 to-pink-400 rounded-full flex items-center justify-center">
+                <span className="text-white text-xs font-bold">{(session?.user?.name) ? session?.user.name[0] : 'U'}</span>
+              </div>
+              <div className="flex-1 flex space-x-2">
+                <input
+                  type="text"
+                  value={newComment}
+                  onChange={(e) => setNewComment(e.target.value)}
+                  placeholder="Add a comment..."
+                  className="flex-1 bg-gray-300 text-gray-800 px-3 py-2 rounded-lg border border-gray-400 focus:border-purple-500 focus:outline-none"
+                  onKeyPress={(e) => {
+                    e.stopPropagation()
+                    if (e.key === 'Enter') {
+                      submitComment()
+                    }
+                  }}
+                  onKeyDown={e => {
+                    e.stopPropagation()
+                  }}
+                  onKeyUp={e => {
+                    e.stopPropagation()
+                  }}
+                />
+                <button
+                  onClick={submitComment}
+                  disabled={isCommenting || !newComment.trim()}
+                  className="px-4 py-2 bg-pink-400 text-white rounded-lg hover:bg-purple-700 disabled:opacity-100 disabled:cursor-not-allowed"
+                >
+                  {isCommenting ? '...' : 'Post'}
+                </button>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      )}
+
       {/* Right Side Action Buttons */}
       <div className="absolute right-4 bottom-25 flex flex-col items-center space-y-6 z-10">
         {/* Like */}
@@ -266,7 +555,7 @@ const ReelsPlayer: React.FC<ReelsPlayerProps> = ({ video, isActive, index, globa
           <div className="bg-black/30 p-3 rounded-full hover:bg-black/50 transition-colors">
             <MessageCircle className="w-6 h-6" />
           </div>
-          <span className="text-xs mt-1 font-semibold">164</span>
+          <span className="text-xs mt-1 font-semibold">{formatNumber(commentsCount)}</span>
         </button>
 
         {/* Share */}
@@ -296,7 +585,7 @@ const ReelsPlayer: React.FC<ReelsPlayerProps> = ({ video, isActive, index, globa
                 {video.creator ? 'U' : 'U'}
               </span>
             </div>
-            <span className="text-white text-sm font-medium">@user</span>
+            <span className="text-white text-sm font-medium">User</span>
             <button className="px-4 py-1 border border-white rounded-lg text-xs font-medium hover:bg-white hover:text-black transition-colors">
               Follow
             </button>

@@ -8,7 +8,7 @@ import { IVideo } from '@/models/video';
 import ReelsPlayer from './ReelsPlayer';
 import FileUpload from './FileUpload';
 import { IKUploadResponse } from 'imagekitio-next/dist/types/components/IKUpload/props';
-import { Plus, Home, ArrowLeft, Volume2, VolumeX } from 'lucide-react';
+import { Plus, ArrowLeft, Volume2, VolumeX } from 'lucide-react';
 
 interface ReelsViewProps {
   onBackToHome: () => void;
