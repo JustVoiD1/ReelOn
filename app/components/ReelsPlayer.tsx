@@ -20,7 +20,7 @@ interface IVideoWithPopulatedCreator extends Omit<IVideo, 'creator'> {
   };
 }
 interface ReelsPlayerProps {
-  video: IVideoWithPopulatedCreator;
+  video: IVideo;
   isActive: boolean;
   index: number;
   globalMuted?: boolean;
@@ -260,9 +260,11 @@ const ReelsPlayer: React.FC<ReelsPlayerProps> = ({ video, isActive, index, globa
       return;
     }
     if (isFollowing || !followStatusChecked) return;
-    
-    const creatorId = video.creator._id as unknown as string
-    
+
+    const creatorId = typeof video.creator === 'object' && video.creator._id
+      ? video.creator._id.toString()
+      : video.creator.toString();
+
     setIsFollowLoading(true)
 
     try {
@@ -318,7 +320,9 @@ const ReelsPlayer: React.FC<ReelsPlayerProps> = ({ video, isActive, index, globa
     const checkFollowStatus = async () => {
       if (session?.user && video.creator) {
         try {
-          const creatorId = video.creator._id as unknown as string
+          const creatorId = typeof video.creator === 'object' && video.creator._id
+            ? video.creator._id.toString()
+            : video.creator.toString();
           const result = await checkFollowing(creatorId);
           if (result.success) {
             setIsFollowing(result.isFollowing)
@@ -333,7 +337,7 @@ const ReelsPlayer: React.FC<ReelsPlayerProps> = ({ video, isActive, index, globa
       }
 
       else {
-        setFollowStatusChecked(false)
+        setFollowStatusChecked(true)
       }
     }
     checkFollowStatus()
@@ -656,13 +660,16 @@ const ReelsPlayer: React.FC<ReelsPlayerProps> = ({ video, isActive, index, globa
           <div className="flex items-center space-x-2 mb-3">
             <div className="w-8 h-8 bg-gradient-to-r from-purple-400 to-pink-400 rounded-full flex items-center justify-center">
               <span className="text-white text-xs font-bold">
-                {video.creator ? video.creator.username[0].toUpperCase() : 'U'}
-              </span>
+                {typeof video.creator === 'object' && (video.creator as any).username
+                  ? (video.creator as any).username[0].toUpperCase()
+                  : 'U'}              </span>
             </div>
-            <span className="text-white text-sm font-medium">{video.creator ? video.creator.username : 'U'}</span>
+            <span className="text-white text-sm font-medium">{typeof video.creator === 'object' && (video.creator as any).username
+              ? (video.creator as any).username
+              : 'User'}</span>
             <button className={`px-4 py-1 rounded-lg text-xs font-medium transition-colors disabled:opacity-50 ${isFollowing
-                ? 'bg-transparent text-white border-2 border-white hover:bg-gray-200 hover:text-black'
-                : 'border-2 border-white text-white hover:bg-white hover:text-black'
+              ? 'bg-transparent text-white border-2 border-white hover:bg-gray-200 hover:text-black'
+              : 'border-2 border-white text-white hover:bg-white hover:text-black'
               }`}
               onClick={handleFollow}
               disabled={!followStatusChecked}
@@ -673,7 +680,9 @@ const ReelsPlayer: React.FC<ReelsPlayerProps> = ({ video, isActive, index, globa
           <h3 className="font-bold text-lg line-clamp-2">{video.title}</h3>
           <p className="text-sm opacity-90 line-clamp-3">{video.description}</p>
           <div className="text-xs opacity-75 mt-2">
-            Follow @{video.creator.username} for daily memes ...
+            Follow @{typeof video.creator === 'object' && (video.creator as any).username
+              ? (video.creator as any).username
+              : 'User'} for daily memes ...
           </div>
         </div>
       </div>
