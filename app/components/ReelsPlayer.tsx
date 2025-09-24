@@ -4,11 +4,23 @@ import React, { useRef, useState, useEffect } from 'react';
 import { Heart, MessageCircle, Share, MoreHorizontal, Play, X, HeartIcon } from 'lucide-react';
 import { IVideo } from '@/models/video';
 import { useSession } from 'next-auth/react';
-import { addComment, checkCommentLiked, checkLiked, getComments, likeComment, likeVideo } from '@/lib/api-action-helpers';
+import { addComment, checkCommentLiked, checkFollowing, checkLiked, followUser, getComments, likeComment, likeVideo, unfollowUser } from '@/lib/api-action-helpers';
 import { IComment } from '@/models/comment';
+import mongoose from 'mongoose';
+type ObjectId = mongoose.Types.ObjectId;
 
+
+
+interface IVideoWithPopulatedCreator extends Omit<IVideo, 'creator'> {
+  creator: {
+    _id: ObjectId;
+    username: string;
+    displayName?: string;
+    profilePicture?: string;
+  };
+}
 interface ReelsPlayerProps {
-  video: IVideo;
+  video: IVideoWithPopulatedCreator;
   isActive: boolean;
   index: number;
   globalMuted?: boolean;
@@ -40,7 +52,9 @@ const ReelsPlayer: React.FC<ReelsPlayerProps> = ({ video, isActive, index, globa
   const [likingComments, setLikingComments] = useState<Set<string>>(new Set())
 
 
-
+  const [isFollowing, setIsFollowing] = useState(false)
+  const [isFollowLoading, setIsFollowLoading] = useState(false)
+  const [followStatusChecked, setFollowStatusChecked] = useState(false)
 
 
 
@@ -240,6 +254,44 @@ const ReelsPlayer: React.FC<ReelsPlayerProps> = ({ video, isActive, index, globa
 
   }
 
+  const handleFollow = async () => {
+    if (!session?.user) {
+      alert('Please login to follow');
+      return;
+    }
+    if (isFollowing || !followStatusChecked) return;
+    
+    const creatorId = video.creator._id as unknown as string
+    
+    setIsFollowLoading(true)
+
+    try {
+      let result;
+      if (isFollowing) {
+        result = await unfollowUser(creatorId)
+      }
+      else {
+        result = await followUser(creatorId)
+
+      }
+      if (result.success) {
+        setIsFollowing(!isFollowing)
+      }
+      else {
+        console.error('Failed to follow')
+      }
+    } catch (err) {
+      console.error('Follow Error: ', err)
+
+    } finally {
+      setIsFollowLoading(false)
+    }
+  }
+
+
+
+
+  // fetch likes and follows
   useEffect(() => {
     const checkLikeStatus = async () => {
       if (session?.user && video._id) {
@@ -263,6 +315,28 @@ const ReelsPlayer: React.FC<ReelsPlayerProps> = ({ video, isActive, index, globa
       }
     }
 
+    const checkFollowStatus = async () => {
+      if (session?.user && video.creator) {
+        try {
+          const creatorId = video.creator._id as unknown as string
+          const result = await checkFollowing(creatorId);
+          if (result.success) {
+            setIsFollowing(result.isFollowing)
+
+          }
+
+        } catch (err) {
+          console.error('Error checking Follow status: ', err)
+        } finally {
+          setFollowStatusChecked(true)
+        }
+      }
+
+      else {
+        setFollowStatusChecked(false)
+      }
+    }
+    checkFollowStatus()
     checkLikeStatus()
   }, [session, video._id])
 
@@ -577,23 +651,29 @@ const ReelsPlayer: React.FC<ReelsPlayerProps> = ({ video, isActive, index, globa
       </div>
 
       {/* Bottom Info */}
-      <div className="absolute bottom-20 left-4 right-20 z-10 text-white">
+      <div className="absolute bottom-20 left-4 right-20 z-30 text-white">
         <div className="space-y-2">
           <div className="flex items-center space-x-2 mb-3">
             <div className="w-8 h-8 bg-gradient-to-r from-purple-400 to-pink-400 rounded-full flex items-center justify-center">
               <span className="text-white text-xs font-bold">
-                {video.creator ? 'U' : 'U'}
+                {video.creator ? video.creator.username[0].toUpperCase() : 'U'}
               </span>
             </div>
-            <span className="text-white text-sm font-medium">User</span>
-            <button className="px-4 py-1 border border-white rounded-lg text-xs font-medium hover:bg-white hover:text-black transition-colors">
-              Follow
+            <span className="text-white text-sm font-medium">{video.creator ? video.creator.username : 'U'}</span>
+            <button className={`px-4 py-1 rounded-lg text-xs font-medium transition-colors disabled:opacity-50 ${isFollowing
+                ? 'bg-transparent text-white border-2 border-white hover:bg-gray-200 hover:text-black'
+                : 'border-2 border-white text-white hover:bg-white hover:text-black'
+              }`}
+              onClick={handleFollow}
+              disabled={!followStatusChecked}
+            >
+              {isFollowLoading ? '...' : isFollowing ? 'Following' : 'Follow'}
             </button>
           </div>
           <h3 className="font-bold text-lg line-clamp-2">{video.title}</h3>
           <p className="text-sm opacity-90 line-clamp-3">{video.description}</p>
           <div className="text-xs opacity-75 mt-2">
-            Follow @user for daily memes ...
+            Follow @{video.creator.username} for daily memes ...
           </div>
         </div>
       </div>
