@@ -662,7 +662,8 @@ const ReelsPlayer: React.FC<ReelsPlayerProps> = ({ video, isActive, index, globa
               <span className="text-white text-xs font-bold">
                 {typeof video.creator === 'object' && (video.creator as any).username
                   ? (video.creator as any).username[0].toUpperCase()
-                  : 'U'}              </span>
+                  : 'U'}
+              </span>
             </div>
             <span className="text-white text-sm font-medium">{typeof video.creator === 'object' && (video.creator as any).username
               ? (video.creator as any).username

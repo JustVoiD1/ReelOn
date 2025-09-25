@@ -375,6 +375,18 @@ export default function Home() {
                   transition={{ delay: index * 0.1 }}
                   className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow"
                 >
+                  <div className=' sticky flex gap-2 justify-start  items-center bg-white  text-black py-3 px-4'>
+                    <div className="w-8 h-8 bg-gradient-to-r from-purple-400 to-pink-400 rounded-full flex items-center justify-center">
+                      <span className="text-white text-xs font-bold">
+                        {typeof video.creator === 'object' && (video.creator as any).username
+                          ? (video.creator as any).username[0].toUpperCase()
+                          : 'U'}
+                      </span>
+                    </div>
+                    <span className="text-black text-sm font-semibold">{typeof video.creator === 'object' && (video.creator as any).username
+                      ? (video.creator as any).username
+                      : 'User'}</span>
+                  </div>
                   <div className="aspect-video bg-gray-200 flex items-center justify-center relative overflow-hidden rounded-t-lg group cursor-pointer"
                     onClick={() => setShowReelsView(true)}>
                     {video.videoUrl ? (
@@ -400,14 +412,14 @@ export default function Home() {
                           onClick={() => handleLike(video._id?.toString() || '')}>
                           <span className="text-lg xs:text-base"><Heart
                             className={`transition-colors ${likedVideos.has(video._id?.toString() || '')
-                                ? 'fill-red-500 text-red-500'
-                                : 'fill-transparent hover:text-red-500'
+                              ? 'fill-red-500 text-red-500'
+                              : 'fill-transparent hover:text-red-500'
                               }`}
                           /></span>
                           <span className="text-lg xs:text-sm">{video.likesCount}</span>
                         </button>
                         <button className="flex items-center space-x-1 hover:text-pink-500 transition-colors"
-                         
+
                         >
                           <span className="text-lg xs:text-base"><MessageCircleIcon /></span>
                           <span className="text-lg xs:text-sm">{video.commentsCount}</span>
